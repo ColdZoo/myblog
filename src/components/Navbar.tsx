@@ -1,100 +1,114 @@
 'use client';
 
+// 完整导航栏实现（包含JWT状态管理、动态菜单、退出逻辑）
 import Link from 'next/link';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { FiUser } from 'react-icons/fi';
+import { jwtDecode } from 'jwt-decode';
 
-import { useState, useEffect } from 'react';
 
-const decodeJWT = (token: string) => {
-  try {
-    return JSON.parse(atob(token.split('.')[1]));
-  } catch {
-    return null;
-  }
+type JWTUser = {
+  userId: number;
+  email: string;
+  isAdmin: boolean;
 };
 
-const Navbar = () => {
-  const [user, setUser] = useState<{
-    id: number;
-    name: string;
-    email: string;
-    isAdmin: boolean;
-  }>({ id: 0, name: '', email: '', isAdmin: false });
+export default function Navbar() {
+  const menuTimer = useRef<NodeJS.Timeout | null>(null);
+  
+  const [user, setUser] = useState<JWTUser | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
-    const jwt = sessionStorage.getItem('jwt');
-    if (jwt) {
-      const decoded = decodeJWT(jwt);
-      if (decoded) setUser(decoded);
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode<JWTUser>(token);
+        setUser(decoded);
+      } catch {
+        localStorage.removeItem('token');
+      }
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('redirectUrl');
+    setUser(null);
+    window.location.href = '/login';
+  };
+
+  const menuItems = useMemo(() => {
+    return [
+      !user && { label: '登录', href: typeof window !== 'undefined' ? `/login?redirect=${encodeURIComponent(window.location.pathname)}` : '/login' },
+      user?.isAdmin && { label: '用户管理', href: '/users' },
+      user && { label: '退出登录', onClick: handleLogout }
+    ].filter((item): item is { label: string; href: string; onClick?: never } | { label: string; onClick: () => void; href?: never } => 
+          !!item && (!!item.href !== !!item.onClick));
+  }, [user]);
+
   return (
-    <nav className="bg-blue-600 shadow-md fixed top-0 w-full z-10">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between h-16 items-center">
-        <div className="flex">
-            <div className="flex-shrink-0 flex items-center h-full">
-              <Link href="/" className="text-white text-lg font-bold">蔡政的博客</Link>
-            </div>
-            {/* 登录用户信息显示 */}
-            {user && (
-              <div className="ml-auto relative">
-                <button className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">
-                  {user.name}
-                </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg">
-                  <button
-                    onClick={() => {
-                      sessionStorage.removeItem('jwt');
-// 由于 setUser 期望的参数类型不是 null，将用户状态重置为初始值
-setUser({ id: -1, name: '', email: '', isAdmin: false });
-                      window.location.reload();
-                    }}
-                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-100"
-                  >
-                    登出
-                  </button>
-                </div>
-              </div>
-            )}
-            <div className="hidden sm:-my-px sm:ml-8 sm:flex">
-              <div className="space-x-4">
-                <Link
-                  href="/resume"
-                  className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  个人简历
-                </Link>
-                {/* 管理员用户管理模块（仅管理员显示） */}
-                {user?.isAdmin && (
+    <nav className="flex items-center justify-between navbar p-4 text-white shadow">
+      <Link href="/" className="text-xl italic">CaiZheng的技术站</Link>
+      
+      <div className="flex gap-10 font-chinese">
+        <Link href="/resume" className="nav-link">关于我</Link>
+        <Link href="/download" className="nav-link">下载中心</Link>
+      </div>
+
+      <div className="relative">
+        <div 
+            className="relative group"
+            onMouseEnter={() => { 
+              if (menuTimer.current) clearTimeout(menuTimer.current);
+              if (menuItems.length > 0) setShowMenu(true); 
+            }}
+            onMouseLeave={() => { 
+              menuTimer.current = setTimeout(() => setShowMenu(false), 200); 
+            }}
+          >
+          <button
+            className="p-2 hover:bg-gray-800 rounded-full"
+          >
+            <FiUser className="w-6 h-6" />
+          </button>
+          
+          {showMenu && (
+            <div className="absolute right-0 mt-3 w-48 bg-blue-50 border border-blue-100 rounded-xl shadow-2xl divide-y divide-blue-50 py-1" onMouseEnter={() => {
+  if (menuTimer.current) clearTimeout(menuTimer.current);
+}} 
+onMouseLeave={() => {
+  menuTimer.current = setTimeout(() => setShowMenu(false), 200);
+}}>
+              {menuItems.map((item, index) => (
+                item?.href ? (
                   <Link
-                    href="/users"
-                    className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium"
+                    key={index}
+                    href={item.href}
+                    className="block px-4 py-2 bg-transparent text-sm text-gray-700 hover:bg-blue-100"
+                    onClick={() => setShowMenu(false)}
                   >
-                    用户管理
+                    {item.label}
                   </Link>
-                )}
-                <Link
-                  href="/login"
-                  className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  邮箱登录
-                </Link>
-                <Link
-                  href="/download"
-                  className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  软件下载
-                </Link>
-              </div>
+                ) : (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      item?.onClick?.();
+                      setShowMenu(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 bg-transparent text-sm text-gray-700 hover:bg-blue-100"
+                  >
+                    {item.label}
+                  </button>
+                )
+              ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}
 
 

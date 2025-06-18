@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import "./globals.css";
+import Image from 'next/image';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,16 +28,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-  className={`${geistSans.variable} ${geistMono.variable} antialiased pt-16`}
->
-  <Navbar />
-  {children}
-  <Link href="https://mail.qiye.163.com/static/login/" className="fixed bottom-4 right-4 w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8 text-white">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2v10a2 2 0 002 2z" />
-    </svg>
-  </Link>
-</body>
+        className={`${geistSans.variable} ${geistMono.variable} antialiased pt-16`}
+      >
+        <Navbar />
+        {children}
+        <Link href="https://mail.qiye.163.com/static/login/" className="fixed bottom-4 right-4 w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+          <Image 
+            src="/globe.svg" 
+            width={32} 
+            height={32}
+            alt="邮箱图标"
+            className="w-8 h-8 text-white"
+          />
+        </Link>
+      </body>
     </html>
   );
 }
