@@ -4,7 +4,7 @@ const DownloadPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
       <Head>
-        <title>软件下载 - Adam's Blog</title>
+        <title>软件下载 - Adam&#39;s Blog</title>
       </Head>
       <h1 className="text-3xl font-bold text-gray-900 mb-8">软件下载</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
