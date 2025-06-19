@@ -2,13 +2,17 @@
   "name": "myblog",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+     "schema": "./src/prisma/schema.prisma"
+  },
   "scripts": {
     "type-check": "tsc --noEmit",
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "tsc && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma.seed": "ts-node prisma/seed.ts"
+    "seed:prod": "node dist/prisma/seed.js",
+    "migrate:prod": "npx prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/client": "6.10.0",
@@ -17,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "next": "^15.3.3",
+    "next-i18next": "^15.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0"
