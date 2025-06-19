@@ -1,10 +1,13 @@
 {
   "ts-node": {
-    "transpileOnly": true
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
   },
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": ".",
+    "outDir": ".dist",
+    "rootDir": "./src",
     "target": "es5",
     "lib": [
       "dom",
@@ -13,7 +16,7 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -27,6 +30,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
       ]
     },
     "plugins": [
@@ -36,12 +42,11 @@
     ]
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "next-env.d.ts",
+    "src/**/*.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next"
   ]
 }

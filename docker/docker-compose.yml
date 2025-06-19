@@ -33,9 +33,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: >
+    command:
       sh -c "npm run migrate:prod && 
-             npm run seed:prod &&
              npm start"
 
   nginx:

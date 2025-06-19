@@ -2,17 +2,15 @@
   "name": "myblog",
   "version": "0.1.0",
   "private": true,
-  "prisma": {
-     "schema": "./src/prisma/schema.prisma"
-  },
   "scripts": {
     "type-check": "tsc --noEmit",
     "dev": "next dev --turbopack",
-    "build": "tsc && prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed:prod": "node dist/prisma/seed.js",
-    "migrate:prod": "npx prisma migrate deploy"
+    "seed:prod": "npx prisma db seed",
+    "migrate:prod": "npx prisma migrate deploy",
+    "clean": "rm -rf .next"
   },
   "dependencies": {
     "@prisma/client": "6.10.0",
