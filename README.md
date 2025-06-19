@@ -2,17 +2,31 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Modify your environment if needed, then run this command to build docker containers.
 ```
+# Build your own environment
+cp docker/env.template docker/.env
+
+docker compose -f docker/docker-compose.yml build --no-cache
+``` 
+- You may need upgrade your docker installation to make sure `docker compose` is a valid command.
+
+- For users in China mainland, you may need set http_proxy to make sure `docker compose` can run. Try these:
+    ```
+    HTTPS_PROXY=http://hasee.my:9527 docker compose -f docker/docker-compose.yml build --no-cache
+    ```
+    A quick mirror source for docker would be very nice for image pulling.
+ 
+
+If `docker compose build` finished. You can let the service up with this command:
+```
+docker compose -f docker/docker-compose.yml up -d
+```
+Don't forget to check docker containers healthy state.
+```
+    docker ps
+```
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
