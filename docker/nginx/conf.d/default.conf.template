@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name caizheng.tech;
+    server_name ${NGX_SERVER_NAME};
 
     location / {
         proxy_pass http://app:3000;

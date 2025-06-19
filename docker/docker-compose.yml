@@ -1,16 +1,9 @@
 services:
-
   
   postgres:
     image: postgres:15
-    env_file:
-      - .env.singleton
     ports:
       - "15432:5432"
-    # environment:
-    #   - POSTGRES_USER=POSTGRES_USER
-    #   - POSTGRES_PASSWORD=${_POSTGRES_PASSWORD}
-    #   - POSTGRES_DB=${_POSTGRES_DB}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -22,8 +15,6 @@ services:
       - app-network
 
   app:
-    env_file:
-      - .env.singleton
     build:
       context: ..
       dockerfile: Dockerfile
@@ -40,7 +31,7 @@ services:
   nginx:
     image: nginx:1.25
     ports:
-      - '80:80'
+      - "${NGX_SERVER_PORT}:80"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ../public:/usr/share/nginx/html/public
